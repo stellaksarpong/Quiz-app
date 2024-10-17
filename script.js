@@ -95,103 +95,124 @@ const Questions = [
     }
 ];
     2
-const questionElement =document.getElementById("question");
-const answerbuttons=document.getElementById("answer-buttons");
-const nextButton=document.getElementById("next-btn");
-const timerElement = document.getElementById("time");
-
-let currentQuestionIndex = 0;
-let score = 0;
-let timer;
-const totalTime = 10; 
-
-function startQuiz(){
-    currentQuestionIndex = 0;
-    score = 0;
-    nextButton.innerHTML= "Next";
-    showQuestion();
-}
-
-function showQuestion(){
-    resetState ();
-    let currentQuestion= Questions[currentQuestionIndex];
-    let questionNo = currentQuestionIndex + 1 ;
-    questionElement.innerHTML =questionNo + " . " + currentQuestion. question;
-
-    currentQuestion.answers.forEach(answer => {
-        const button= document.createElement("button");
-        button.innerHTML = answer.text;
-        button.classList.add("btn");
-        answerbuttons.appendChild(button);
-        if(answer.correct){
-            button.dataset.correct=answer.correct;
+    const questionElement = document.getElementById("question");
+    const answerButtons = document.getElementById("answer-buttons");
+    const nextButton = document.getElementById("next-btn");
+    const timerElement = document.getElementById("time");
+    
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer;
+    const totalTime = 10; // Total time for each question
+    
+    let shuffledQuestions = []; // Array to hold shuffled questions
+    
+    function startQuiz() {
+        currentQuestionIndex = 0;
+        score = 0;
+        nextButton.innerHTML = "Next";
+        timerElement.style.display = "block"; // Show the timer at the start
+        shuffledQuestions = shuffleArray(Questions); // Shuffle questions
+        showQuestion();
+    }
+    
+    function shuffleArray(array) {
+        // Fisher-Yates shuffle algorithm
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
         }
-        button.addEventListener("click",selectAnswer);
-
-        
-    });
-    startTimer();
+        return array;
+    }
+    
+    function showQuestion() {
+        resetState();
+        let currentQuestion = shuffledQuestions[currentQuestionIndex];
+        let questionNo = currentQuestionIndex + 1;
+        questionElement.innerHTML = questionNo + ". " + currentQuestion.question;
+    
+        currentQuestion.answers.forEach(answer => {
+            const button = document.createElement("button");
+            button.innerHTML = answer.text;
+            button.classList.add("btn");
+            answerButtons.appendChild(button);
+            if (answer.correct) {
+                button.dataset.correct = answer.correct;
+            }
+            button.addEventListener("click", selectAnswer);
+        });
+    
+        startTimer();
+    }
+    
     function startTimer() {
         let timeRemaining = totalTime;
-        timerElement.innerHTML = timeRemaining;
-
+        timerElement.textContent = timeRemaining;
+    
         timer = setInterval(() => {
             timeRemaining--;
-            timerElement.innerHTML = timeRemaining;
+            timerElement.textContent = timeRemaining;
     
             if (timeRemaining <= 0) {
                 clearInterval(timer);
-                selectAnswer({ target: null }); //submit automatically
+                handleNextButton(); // Automatically move to the next question
             }
         }, 1000);
     }
-}
-    function resetState(){
-        nextButton.style.display= "none";
-        while(answerbuttons.firstChild){ 
-            answerbuttons.removeChild(answerbuttons.firstChild)
+    
+    function resetState() {
+        nextButton.style.display = "none";
+        while (answerButtons.firstChild) {
+            answerButtons.removeChild(answerButtons.firstChild);
         }
         clearInterval(timer); // Clear any previous timer
-    timerElement.innerHTML = totalTime; // Reset timer display
+        timerElement.textContent = totalTime; // Reset timer display
     }
-    function selectAnswer(e){
+    
+    function selectAnswer(e) {
         clearInterval(timer); // Stop the timer
-        const selectedBtn =e.target;
-        const isCorrect = selectedBtn.dataset.correct=== "true";
-        if (isCorrect){
+        const selectedBtn = e.target;
+        const isCorrect = selectedBtn.dataset.correct === "true";
+        if (isCorrect) {
             selectedBtn.classList.add("correct");
             score++;
-        } else{
+        } else {
             selectedBtn.classList.add("incorrect");
         }
-        Array.from(answerbuttons.children).forEach(button=>{
-            if(button.dataset.correct==="true"){
-                button.classList.add("correct")
+        Array.from(answerButtons.children).forEach(button => {
+            if (button.dataset.correct === "true") {
+                button.classList.add("correct");
             }
-            button.disabled =true;
+            button.disabled = true;
         });
-        nextButton.style.display= "block";
+        nextButton.style.display = "block";
     }
-    function showScore(){
+    
+    function showScore() {
         resetState();
-        questionElement.innerHTML=`you score ${score} out of ${Questions.length}!`;
-        nextButton.innerHTML= "Star Over";
-        nextButton.style.display="block";
-        timerElement.style.display = "none";
+        questionElement.innerHTML = `You scored ${score} out of ${Questions.length}!`;
+        nextButton.innerHTML = "Start Over";
+        nextButton.style.display = "block";
+        timerElement.style.display = "none"; // Hide the timer when the quiz ends
     }
-    function handleNextButton(){
+    
+    function handleNextButton() {
         currentQuestionIndex++;
-        if(currentQuestionIndex<Questions.length){
+        if (currentQuestionIndex < shuffledQuestions.length) {
             showQuestion();
-        }else{
+        } else {
             showScore();
         }
     }
-    nextButton.addEventListener("click",()=>{
-        if(currentQuestionIndex<Questions.length){
+    
+    nextButton.addEventListener("click", () => {
+        if (currentQuestionIndex < shuffledQuestions.length) {
             handleNextButton();
-        }else{
+        } else {
             startQuiz();
         }
-    })
-    startQuiz(); 
+    });
+    
+    startQuiz();
+    
+    
