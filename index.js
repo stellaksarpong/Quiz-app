@@ -55,6 +55,16 @@ const konadu =['Boateng']
 const res=[... stella,...konadu]
 console.log(`${res}`)
 
+const list =['a','b','c']
+let i=0
+while (i< list.length){
+    //console.log(list [i])
+    console.log(i)
+    i=i+1
+}
+
+const num =['a','b','c']
+let =0
 
 
 
@@ -63,7 +73,11 @@ console.log(`${res}`)
 
 
 
-
+const Ben='Hi'
+    const person={
+        name :'Ben'
+    }
+console.log(Ben)
 
 
 

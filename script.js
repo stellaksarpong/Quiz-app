@@ -94,8 +94,7 @@ const Questions = [
         ]
     }
 ];
-    
-
+    2
 const questionElement =document.getElementById("question");
 const answerbuttons=document.getElementById("answer-buttons");
 const nextButton=document.getElementById("next-btn");
@@ -104,7 +103,7 @@ const timerElement = document.getElementById("time");
 let currentQuestionIndex = 0;
 let score = 0;
 let timer;
-const totalTime = 5; 
+const totalTime = 10; 
 
 function startQuiz(){
     currentQuestionIndex = 0;
